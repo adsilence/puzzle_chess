@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>
+<script src="https://pixijs.download/release/pixi.js"></script>
+  </head>
+  <body>
+    <h1>Hello PixiJS</h1>
+<script type="module">
+  import { atlasData } from './spritesheet.js';
+
+  const board_size = 128;
+
+
+  let board = [
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+    [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+  ];
+
+  // create app
+  const app = new PIXI.Application();
+  await app.init({background: '#1099bb', resizeTo: window });
+  document.body.appendChild(app.canvas);
+
+
+  // create assets
+const sheetTexture = await PIXI.Assets.load('assets/spritesheet.png');
+  const spritesheet = new PIXI.Spritesheet(
+    sheetTexture,
+    atlasData
+);
+await spritesheet.parse();
+
+  function createBoardPiece(x,y) {
+    let sprite = PIXI.Sprite.from(spritesheet.textures.board_piece);
+    sprite.x = x;
+    sprite.y = y;
+
+    sprite.eventMode = "static";
+    sprite.cursor = "pointer";
+    sprite.anchor.set(0.5);
+    sprite.on('pointerdown', onDragStart, sprite);
+
+    app.stage.addChild(sprite);
+  }  
+
+  createBoardPiece(128, 128);
+
+  createBoardPiece(256, 384);
+
+  let pawn = PIXI.Sprite.from(spritesheet.textures.pawn_black);
+    pawn.x = 128;
+    pawn.y = 128;
+
+    pawn.eventMode = "static";
+    pawn.cursor = "pointer";
+    pawn.on('pointerdown', onDragStart, pawn);
+    pawn.on('pointerdown', onClick);
+    pawn.on('pointerleave', offClick)
+
+    const rect = new PIXI.Graphics()
+      .rect(0, 0, 100, 100)
+      .fill({color:0xFFFF00, alpha:0.5});
+    app.stage.addChild(pawn);
+
+
+let dragTarget = null;
+
+    app.stage.eventMode = 'static';
+    app.stage.hitArea = app.screen;
+    app.stage.on('pointerup', onDragEnd);
+    app.stage.on('pointerupoutside', onDragEnd);
+
+    function onClick() {
+      app.stage.addChild(rect);
+    }
+
+    function offClick() {
+      app.stage.removeChild(rect);
+    }
+
+    function onDragMove(event) {
+        if (dragTarget) {
+            dragTarget.parent.toLocal(event.global, null, dragTarget.position);
+        }
+    }
+
+    function onDragStart() {
+        // Store a reference to the data
+        // * The reason for this is because of multitouch *
+        // * We want to track the movement of this particular touch *
+        this.alpha = 0.5;
+        dragTarget = this;
+        app.stage.on('pointermove', onDragMove);
+
+        // set board to be empty at that location
+        let grid_aligned_x = Math.floor(dragTarget.x / board_size);
+        let grid_aligned_y = Math.floor(dragTarget.y / board_size);
+        console.log(grid_aligned_x);
+        console.log(grid_aligned_y);
+        if (dragTarget.texture.label !== "board_piece") {
+          board[grid_aligned_x][grid_aligned_y] = 0;
+        } else { 
+          board[grid_aligned_x][grid_aligned_y] = 0;
+          board[grid_aligned_x - 1][grid_aligned_y - 1] = 0;
+          board[grid_aligned_x][grid_aligned_y - 1] = 0;
+          board[grid_aligned_x - 1][grid_aligned_y] = 0;
+        }
+    }
+
+    function onDragEnd() {
+        if (dragTarget) {
+
+          // snap to grid
+      let grid_aligned_x = Math.floor(dragTarget.x / board_size);
+      dragTarget.x = board_size * grid_aligned_x;
+      let grid_aligned_y = Math.floor(dragTarget.y / board_size);
+      dragTarget.y = board_size * grid_aligned_y;
+
+          // update board state
+          if (dragTarget.texture.label === "pawn_black" || dragTarget.texture.label === "pawn_white") {
+            board[grid_aligned_x][grid_aligned_y] = "p";
+          }
+          else if (dragTarget.texture.label === "knight_black" || dragTarget.texture.label === "knight_white") {
+            board[grid_aligned_x][grid_aligned_y] = "n";
+          }
+          else if (dragTarget.texture.label === "bishop_black" || dragTarget.texture.label === "bishop_white") {
+            board[grid_aligned_x][grid_aligned_y] = "b";
+          }
+          else if (dragTarget.texture.label === "rook_black" || dragTarget.texture.label === "rook_white") {
+            board[grid_aligned_x][grid_aligned_y] = "r";
+          }
+          else if (dragTarget.texture.label === "queen_black" || dragTarget.texture.label === "queen_white") {
+            board[grid_aligned_x][grid_aligned_y] = "q";
+          }
+          else if (dragTarget.texture.label === "king_black" || dragTarget.texture.label === "king_white") {
+            board[grid_aligned_x][grid_aligned_y] = "k";
+          }
+          else if (dragTarget.texture.label === "board_piece") {
+            board[grid_aligned_x][grid_aligned_y] = 1;
+            board[grid_aligned_x - 1][grid_aligned_y - 1] = 1;
+            board[grid_aligned_x - 1][grid_aligned_y] = 1;
+            board[grid_aligned_x][grid_aligned_y - 1] = 1;
+          }
+          console.log(board);
+
+            // finish drag
+            app.stage.off('pointermove', onDragMove);
+            dragTarget.alpha = 1;
+            dragTarget = null;
+        }
+    }
+</script>
+  </body>
+</html>
+
