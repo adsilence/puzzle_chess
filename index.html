@@ -79,40 +79,40 @@
     }
 
     function pieceToNotation(piece) {
-      if (piece === spritesheet.textures.pawn_black) {
+      if (piece === spritesheet.textures.pawn_black || piece === "pawn_black") {
         return "p";
       }
-      if (piece === spritesheet.textures.knight_black) {
+      if (piece === spritesheet.textures.knight_black || piece === "knight_black") {
         return "n";
       }
-      if (piece === spritesheet.textures.bishop_black) {
+      if (piece === spritesheet.textures.bishop_black || piece === "bishop_black") {
         return "b";
       }
-      if (piece === spritesheet.textures.rook_black) {
+      if (piece === spritesheet.textures.rook_black || piece === "rook_black") {
         return "r";
       }
-      if (piece === spritesheet.textures.queen_black) {
+      if (piece === spritesheet.textures.queen_black || piece === "queen_black") {
         return "q";
       }
-      if (piece === spritesheet.textures.king_black) {
+      if (piece === spritesheet.textures.king_black || piece === "king_black") {
         return "k";
       }
-      if (piece === spritesheet.textures.pawn_white) {
+      if (piece === spritesheet.textures.pawn_white || piece === "pawn_white") {
         return "P";
       }
-      if (piece === spritesheet.textures.knight_white) {
+      if (piece === spritesheet.textures.knight_white || piece === "knight_white") {
         return "N";
       }
-      if (piece === spritesheet.textures.bishop_white) {
+      if (piece === spritesheet.textures.bishop_white || piece === "bishop_white") {
         return "B";
       }
-      if (piece === spritesheet.textures.rook_white) {
+      if (piece === spritesheet.textures.rook_white || piece === "rook_white") {
         return "R";
       }
-      if (piece === spritesheet.textures.queen_white) {
+      if (piece === spritesheet.textures.queen_white || piece === "queen_white") {
         return "Q";
       }
-      if (piece === spritesheet.textures.king_black) {
+      if (piece === spritesheet.textures.king_white || piece === "king_white") {
         return "K";
       }
     }
@@ -179,12 +179,8 @@
       // set board to be empty at that location
       let gridAlignedX = Math.floor(dragTarget.x / boardSize);
       let gridAlignedY = Math.floor(dragTarget.y / boardSize);
-      console.log(gridAlignedX);
-      console.log(gridAlignedY);
       if (dragTarget.texture.label !== "board_piece") {
-        console.log(board[gridAlignedY][gridAlignedX]);
         board[gridAlignedX][gridAlignedY] = 1;
-        console.log(board[gridAlignedY][gridAlignedX]);
       } else {
         board[gridAlignedX][gridAlignedY] = 0;
         board[gridAlignedX + 1][gridAlignedY + 1] = 0;
@@ -204,25 +200,9 @@
 
 
         // update board state
-        if (dragTarget.texture.label === "pawn_black" || dragTarget.texture.label === "pawn_white") {
-          board[gridAlignedX][gridAlignedY] = "p";
-        }
-        else if (dragTarget.texture.label === "knight_black" || dragTarget.texture.label === "knight_white") {
-          board[gridAlignedX][gridAlignedY] = "n";
-        }
-        else if (dragTarget.texture.label === "bishop_black" || dragTarget.texture.label === "bishop_white") {
-          board[gridAlignedX][gridAlignedY] = "b";
-        }
-        else if (dragTarget.texture.label === "rook_black" || dragTarget.texture.label === "rook_white") {
-          board[gridAlignedX][gridAlignedY] = "r";
-        }
-        else if (dragTarget.texture.label === "queen_black" || dragTarget.texture.label === "queen_white") {
-          board[gridAlignedX][gridAlignedY] = "q";
-        }
-        else if (dragTarget.texture.label === "king_black" || dragTarget.texture.label === "king_white") {
-          board[gridAlignedX][gridAlignedY] = "k";
-        }
-        else if (dragTarget.texture.label === "board_piece") {
+        if (dragTarget.texture.label !== "board_piece") {
+          board[gridAlignedX][gridAlignedY] = pieceToNotation(dragTarget.texture.label);
+        } else {
           board[gridAlignedX][gridAlignedY] = 1;
           board[gridAlignedX + 1][gridAlignedY] = 1;
           board[gridAlignedX][gridAlignedY + 1] = 1;
