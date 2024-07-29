@@ -15,23 +15,24 @@
     const boardSize = 128;
 
     let board = [
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+      [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ["N", "p", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, "B", 1, "Q", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, "r", 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, "k", 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ];
+    board = board[0].map((_, colIndex) => board.map(row => row[colIndex]));
 
     // create app
     const app = new PIXI.Application();
@@ -73,9 +74,20 @@
 
     addPiece(0, 0, spritesheet.textures.board_piece);
     addPiece(2, 2, spritesheet.textures.board_piece);
+    addPiece(4, 4, spritesheet.textures.board_piece);
+    addPiece(8, 4, spritesheet.textures.board_piece);
+    addPiece(10, 4, spritesheet.textures.board_piece);
+    addPiece(2, 4, spritesheet.textures.board_piece);
+    addPiece(4, 2, spritesheet.textures.board_piece);
+
     let pawn = addPiece(1, 1, spritesheet.textures.pawn_black);
     let knight = addPiece(0, 1, spritesheet.textures.knight_white);
     let bishop = addPiece(2, 3, spritesheet.textures.bishop_white);
+    let rook = addPiece(3, 4, spritesheet.textures.rook_black);
+    let queen = addPiece(4, 3, spritesheet.textures.queen_white);
+    let king = addPiece(3, 5, spritesheet.textures.king_black);
+
+    console.log(pawn);
 
 
     app.stage.eventMode = 'static';
@@ -85,12 +97,12 @@
 
     let highlightContainer = new PIXI.Container;
     app.stage.addChild(highlightContainer);
+
     // input functions
     function onClick() {
       let validMoves = [];
       highlightContainer.parent.removeChild(highlightContainer);
       highlightContainer = new PIXI.Container;
-      console.log(highlightContainer);
 
       clickTarget = this;
       let gridAlignedX = Math.floor(clickTarget.x / boardSize);
@@ -102,7 +114,7 @@
 
       validMoves.forEach((validMove) => {
         const rect = new PIXI.Graphics()
-          .rect(validMove[0] * boardSize, validMove[1] * boardSize, 128, 128)
+          .rect(validMove[0] * boardSize, validMove[1] * boardSize, boardSize, boardSize)
           .fill({ color: 0xFFFF00, alpha: 0.5 });
         highlightContainer.addChild(rect);
       });
@@ -127,12 +139,14 @@
       console.log(gridAlignedX);
       console.log(gridAlignedY);
       if (dragTarget.texture.label !== "board_piece") {
-        board[gridAlignedX][gridAlignedY] = 0;
+        console.log(board[gridAlignedY][gridAlignedX]);
+        board[gridAlignedX][gridAlignedY] = 1;
+        console.log(board[gridAlignedY][gridAlignedX]);
       } else {
         board[gridAlignedX][gridAlignedY] = 0;
-        board[gridAlignedX - 1][gridAlignedY - 1] = 0;
-        board[gridAlignedX][gridAlignedY - 1] = 0;
-        board[gridAlignedX - 1][gridAlignedY] = 0;
+        board[gridAlignedX + 1][gridAlignedY + 1] = 0;
+        board[gridAlignedX][gridAlignedY + 1] = 0;
+        board[gridAlignedX + 1][gridAlignedY] = 0;
       }
     }
 
@@ -144,6 +158,7 @@
         dragTarget.x = boardSize * gridAlignedX;
         let gridAlignedY = Math.floor(dragTarget.y / boardSize);
         dragTarget.y = boardSize * gridAlignedY;
+
 
         // update board state
         if (dragTarget.texture.label === "pawn_black" || dragTarget.texture.label === "pawn_white") {
@@ -166,9 +181,9 @@
         }
         else if (dragTarget.texture.label === "board_piece") {
           board[gridAlignedX][gridAlignedY] = 1;
-          board[gridAlignedX - 1][gridAlignedY - 1] = 1;
-          board[gridAlignedX - 1][gridAlignedY] = 1;
-          board[gridAlignedX][gridAlignedY - 1] = 1;
+          board[gridAlignedX + 1][gridAlignedY] = 1;
+          board[gridAlignedX][gridAlignedY + 1] = 1;
+          board[gridAlignedX + 1][gridAlignedY + 1] = 1;
         }
         console.log(board);
 

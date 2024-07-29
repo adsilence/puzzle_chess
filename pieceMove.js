@@ -25,7 +25,11 @@ function getValidMovesPawn(x,y,board) {
 }
 
 function getValidMovesKnight(x,y,board) {
-    return [[x + 1, y + 2], [x + 2, y + 1], [x - 1, + y + 2], [x - 2, y + 1]];
+    let spot = board[x + 1][y + 2];
+    if (spot === 1) {
+        return [[x + 1, y + 2]];
+    }
+    return [];
 }
 function getValidMovesBishop(x,y,board) {
     return [];
