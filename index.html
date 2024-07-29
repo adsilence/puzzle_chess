@@ -15,12 +15,12 @@
     const boardSize = 128;
 
     let board = [
-      [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      ["N", "p", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, "B", 1, "Q", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, "r", 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, "k", 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -32,6 +32,7 @@
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ];
+
     board = board[0].map((_, colIndex) => board.map(row => row[colIndex]));
 
     // create app
@@ -65,11 +66,55 @@
       piece.on('pointerdown', onClick);
       //piece.on('pointerleave', offClick)
 
-      if (pieceType === "board_piece") {
-        piece.anchor.set(0.5);
+      if (pieceType === spritesheet.textures.board_piece) {
+        board[x][y] = 1;
+        board[x + 1][y] = 1;
+        board[x][y + 1] = 1;
+        board[x + 1][y + 1] = 1;
+      } else {
+        board[x][y] = pieceToNotation(pieceType);
       }
 
       app.stage.addChild(piece);
+    }
+
+    function pieceToNotation(piece) {
+      if (piece === spritesheet.textures.pawn_black) {
+        return "p";
+      }
+      if (piece === spritesheet.textures.knight_black) {
+        return "n";
+      }
+      if (piece === spritesheet.textures.bishop_black) {
+        return "b";
+      }
+      if (piece === spritesheet.textures.rook_black) {
+        return "r";
+      }
+      if (piece === spritesheet.textures.queen_black) {
+        return "q";
+      }
+      if (piece === spritesheet.textures.king_black) {
+        return "k";
+      }
+      if (piece === spritesheet.textures.pawn_white) {
+        return "P";
+      }
+      if (piece === spritesheet.textures.knight_white) {
+        return "N";
+      }
+      if (piece === spritesheet.textures.bishop_white) {
+        return "B";
+      }
+      if (piece === spritesheet.textures.rook_white) {
+        return "R";
+      }
+      if (piece === spritesheet.textures.queen_white) {
+        return "Q";
+      }
+      if (piece === spritesheet.textures.king_black) {
+        return "K";
+      }
     }
 
     addPiece(0, 0, spritesheet.textures.board_piece);
@@ -86,8 +131,6 @@
     let rook = addPiece(3, 4, spritesheet.textures.rook_black);
     let queen = addPiece(4, 3, spritesheet.textures.queen_white);
     let king = addPiece(3, 5, spritesheet.textures.king_black);
-
-    console.log(pawn);
 
 
     app.stage.eventMode = 'static';
