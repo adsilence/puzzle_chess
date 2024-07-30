@@ -25,11 +25,51 @@ function getValidMovesPawn(x,y,board) {
 }
 
 function getValidMovesKnight(x,y,board) {
-    let spot = board[x + 1][y + 2];
+    let validMoves = [];
+
+    // Right side
+   let spot = board[x + 1][y + 2];
     if (spot === 1) {
-        return [[x + 1, y + 2]];
+        validMoves[0] = [x + 1, y + 2];
     }
-    return [];
+
+    spot = board[x + 2][y + 1];
+    if (spot === 1) {
+        validMoves[1] = [x + 2, y + 1];
+    }
+
+    spot = board[x + 1][y - 2];
+    if (spot === 1) {
+        validMoves[2] = [x + 1, y - 2];
+    }
+
+    spot = board[x + 2][y - 1];
+    if (spot === 1) {
+        validMoves[3] = [x + 2, y - 1];
+    }
+
+    /*// Left side
+    spot = board[x - 1][y - 2];
+    if (spot === 1) {
+        validMoves[4] = [x - 1, y - 2];
+    }
+
+    spot = board[x - 2][y - 1];
+    if (spot === 1) {
+        validMoves[5] = [x - 2, y - 1];
+    }
+
+    spot = board[x - 1][y + 2];
+    if (spot === 1) {
+        validMoves[6] = [x - 1, y + 2];
+    }
+
+    spot = board[x - 2][y + 1];
+    if (spot === 1) {
+        validMoves[7] = [x - 2, y + 1];
+    }*/
+
+    return validMoves;
 }
 function getValidMovesBishop(x,y,board) {
     return [];
