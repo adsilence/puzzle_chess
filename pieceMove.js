@@ -67,7 +67,7 @@ function getValidMovesKnight(x,y,board) {
             validMoves[7] = [x - 2, y + 1];
         }
     }
-    
+
     return validMoves;
 }
 function getValidMovesBishop(x,y,board) {
