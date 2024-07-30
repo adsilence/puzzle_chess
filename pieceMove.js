@@ -48,26 +48,28 @@ function getValidMovesKnight(x,y,board) {
         validMoves[3] = [x + 2, y - 1];
     }
 
-    /*// Left side
-    spot = board[x - 1][y - 2];
-    if (spot === 1) {
-        validMoves[4] = [x - 1, y - 2];
+    // Left side
+    if(x != 0) {
+        spot = board[x - 1][y - 2];
+        if (spot === 1) {
+            validMoves[4] = [x - 1, y - 2];
+        }
+        spot = board[x - 1][y + 2];
+        if (spot === 1) {
+            validMoves[5] = [x - 1, y + 2];
+        }
     }
 
-    spot = board[x - 2][y - 1];
-    if (spot === 1) {
-        validMoves[5] = [x - 2, y - 1];
+    if(x >= 2) {
+        spot = board[x - 2][y - 1];
+        if (spot === 1) {
+            validMoves[6] = [x - 2, y - 1];
+        }
+        spot = board[x - 2][y + 1];
+        if (spot === 1) {
+            validMoves[7] = [x - 2, y + 1];
+        }
     }
-
-    spot = board[x - 1][y + 2];
-    if (spot === 1) {
-        validMoves[6] = [x - 1, y + 2];
-    }
-
-    spot = board[x - 2][y + 1];
-    if (spot === 1) {
-        validMoves[7] = [x - 2, y + 1];
-    }*/
 
     return validMoves;
 }
