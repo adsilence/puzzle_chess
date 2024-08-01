@@ -13,7 +13,11 @@ export function getValidMoves(x,y,board,piece) {
         return getValidMovesBishop(x,y,board);
     }
     if (piece === "rook_black" || piece === "rook_white") {
-        return getValidMovesRook(x,y,board);
+        let pieceColor = true;
+        if(piece === "rook_black"){
+            pieceColor = false;
+        }
+        return getValidMovesRook(x,y,pieceColor,board);
     }
     if (piece === "queen_black" || piece === "queen_white") {
         return getValidMovesQueen(x,y,board);
@@ -43,15 +47,15 @@ function isColorOpp(pieceColor,spot) {
     return oppColor;
 }
 
-function getPieceColor(spot){
-    let pieceColor;
-    if(spot === "r" || spot === "p" || spot === "b" || spot === "n" || spot === "q" || spot === "k") {
-        pieceColor = false;
+function isSpotPiece(spot){
+    let piece;
+    if(spot !== 1 && spot !== 0) {
+        piece = true;
     }
     else {
-        pieceColor = true;
+        piece = false;
     }
-    return pieceColor;
+    return piece;
 }
 
 // if pieceColor === true, the piece is white
@@ -78,7 +82,7 @@ function getValidMovesKnight(x,y,pieceColor,board) {
     }
 
     // Left side
-    if(x != 0) {
+    if(x !== 0) {
         spot = board[x - 1][y - 2];
         if (spot === 1 || isColorOpp(pieceColor,spot)) {
             validMoves[4] = [x - 1, y - 2];
@@ -105,8 +109,53 @@ function getValidMovesKnight(x,y,pieceColor,board) {
 function getValidMovesBishop(x,y,board) {
     return [];
 }
-function getValidMovesRook(x,y,board) {
-    return [];
+function getValidMovesRook(x,y,pieceColor,board) {
+    let validMoves = [];
+    let r = y;  // row
+    let c = x;  // column
+    let k = -1; // starting index in validMoves
+    let spot;
+    for(let i = 0; i < 4; i++) {
+        r = y;
+        c = x;
+        while(true) {
+            // On the first for loop, check vertically up
+            if(i === 0) {
+                r -= 1;
+                k += 1;
+            }
+            // On the second for loop, check vertically down
+            if(i === 1) {
+                r += 1;
+                k += 1;
+            }
+            // On the third for loop, check horizontally right
+            if(i === 2) {
+                c += 1;
+                k += 1;
+            }
+            // On the fourth for loop, check horizontally left
+            if(i === 3) {
+                c -= 1;
+                k += 1;
+            }
+            spot = board[c][r];
+            // If spot is open
+            if(spot === 1) {
+                validMoves[k] = [c, r];
+            }
+            // If spot has a piece and is the same color
+            else if(spot === 0 || (isSpotPiece(spot) && !isColorOpp(pieceColor,spot))) {
+                break;
+            }
+            // If spot has a piece but is the opposite color
+            else if(isSpotPiece(spot) && isColorOpp(pieceColor,spot)) {
+                validMoves[k] = [c, r];
+                break;
+            }
+        }
+    }
+    return validMoves;
 }
 function getValidMovesQueen(x,y,board) {
     return [];
