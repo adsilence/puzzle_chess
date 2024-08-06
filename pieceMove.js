@@ -311,15 +311,20 @@ function getValidMovesQueen(x,y,pieceColor,board) {
     return validMoves;
 }
 function getValidMovesKing(x,y,pieceColor,board) {
+    // Miscellaneous initialization
     let validMoves = [];
-    let r = y;  // row
-    let c = x;  // column
-    let k = 0; // starting index in validMoves
+    let k = 0; // index in validMoves
+    let r;  // row
+    let c;  // column
     let spot;
-    let knightValid = true;
-    let diagonalValid = true;
-    let ninetyValid = true;
     let checkSpot;
+
+    // Used to check if spot is valid
+    let knightValid;
+    let diagonalValid;
+    let ninetyValid;
+
+    // Used to keep track of which potentially valid spot is being checked
     let Xcoord;
     let Ycoord;
 
@@ -504,7 +509,7 @@ function getValidMovesKing(x,y,pieceColor,board) {
                     if(checkSpot === 1) {
                         continue;
                     }
-                    // If spot is an opposite color bishop or queen
+                    // If spot is an opposite color rook or queen
                     else if((checkSpot === "r" || checkSpot === "R" || checkSpot === "q" || checkSpot === "Q")
                         && isColorOpp(pieceColor,checkSpot)) {
                         ninetyValid = false;
@@ -514,19 +519,19 @@ function getValidMovesKing(x,y,pieceColor,board) {
                     else if(!isColorOpp(pieceColor,checkSpot) || isColorOpp(pieceColor,checkSpot)) {
                         break;
                     }
+                    // If spot is now out of play area
                     else if(checkSpot === 0) {
                         break;
                     }
                 }
             }
 
+            // If the spot passes all checks, add to validMoves
             if(knightValid && diagonalValid && ninetyValid) {
                 validMoves[k] = [Xcoord, Ycoord];
                 k++;
             }
         }
     }
-
-
     return validMoves;
 }
