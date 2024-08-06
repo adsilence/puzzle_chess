@@ -316,97 +316,214 @@ function getValidMovesKing(x,y,pieceColor,board) {
     let c = x;  // column
     let k = 0; // starting index in validMoves
     let spot;
-    let valid = true;
+    let knightValid = true;
+    let diagonalValid = true;
+    let ninetyValid = true;
     let checkSpot;
+    let Xcoord;
+    let Ycoord;
 
-    // Check top square
-    r--;
-    spot = board[c][r];
-    // Check for knights
-    if(spot === 1 || isColorOpp(pieceColor,spot)) {
-        checkSpot = board[c + 1][r - 2];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+    for(let i = 0; i < 8; i++) {
+        // default variables
+        r = y;
+        c = x;
+        knightValid = true;
+        diagonalValid = true;
+        ninetyValid = true;
+
+        // On the first for loop, check up
+        if(i === 0) {
+            r -= 1;
+            Xcoord = c;
+            Ycoord = r;
         }
-        checkSpot = board[c + 2][r - 1];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+        // On the second for loop, check up right
+        else if(i === 1) {
+            r -= 1;
+            c += 1;
+            Xcoord = c;
+            Ycoord = r;
         }
-        checkSpot = board[c + 2][r + 1];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+        // On the third for loop, check right
+        else if(i === 2) {
+            c += 1;
+            Xcoord = c;
+            Ycoord = r;
         }
-        checkSpot = board[c + 1][r + 2];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+        // On the fourth for loop, check down right
+        else if(i === 3) {
+            c += 1;
+            r += 1;
+            Xcoord = c;
+            Ycoord = r;
         }
-        // Left side
-        checkSpot = board[c - 1][r + 2];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+        // On the fifth for loop, check down
+        else if(i === 4) {
+            r += 1;
+            Xcoord = c;
+            Ycoord = r;
         }
-        checkSpot = board[c - 2][r + 1];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+        // On the sixth for loop, check down left
+        else if(i === 5) {
+            r += 1;
+            c -= 1;
+            Xcoord = c;
+            Ycoord = r;
         }
-        checkSpot = board[c - 2][r - 1];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+        // On the seventh for loop, check left
+        else if(i === 6) {
+            c -= 1;
+            Xcoord = c;
+            Ycoord = r;
         }
-        checkSpot = board[c - 1][r - 2];
-        if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
-            valid = false;
+        // On the eigth for loop, check up left
+        else if(i === 7) {
+            c -= 1;
+            r -= 1;
+            Xcoord = c;
+            Ycoord = r;
         }
 
-        // Check for bishops and queen
-        let diagonalValid = true;
-        for(let i = 0; i < 4; i++) {
-            r = y - 1;
-            c = x;
-            while(true) {
-                // On the first for loop, check up and right
-                if(i === 0) {
-                    r -= 1;
-                    c += 1;
-                }
-                // On the second for loop, check down and right
-                else if(i === 1) {
-                    r += 1;
-                    c += 1;
-                }
-                // On the third for loop, check down and left
-                else if(i === 2) {
-                    c -= 1;
-                    r += 1;
-                }
-                // On the fourth for loop, check up and left
-                else if(i === 3) {
-                    c -= 1;
-                    r -= 1;
-                }
-                checkSpot = board[c][r];
-                // If spot is open
-                if(checkSpot === 1) {
-                    continue;
-                }
-                // If spot is an opposite color bishop or queen
-                else if((checkSpot === "b" || checkSpot === "B" || checkSpot === "q" || checkSpot === "Q")
-                    && isColorOpp(pieceColor,checkSpot)) {
-                    diagonalValid = false;
-                    break;
-                }
-                // If spot has a piece but is the same color
-                else if(!isColorOpp(pieceColor,checkSpot)) {
-                    break;
-                }
-                else if(checkSpot === 0) {
-                    break;
+        spot = board[c][r];
+
+        // If spot is not in play area, go next
+        if(spot === 0)
+        {
+            continue;
+        }
+
+        // Check for knights
+        if(spot === 1 || isColorOpp(pieceColor,spot)) {
+            checkSpot = board[c + 1][r - 2];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+            checkSpot = board[c + 2][r - 1];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+            checkSpot = board[c + 2][r + 1];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+            checkSpot = board[c + 1][r + 2];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+            // Left side
+            checkSpot = board[c - 1][r + 2];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+            checkSpot = board[c - 2][r + 1];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+            checkSpot = board[c - 2][r - 1];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+            checkSpot = board[c - 1][r - 2];
+            if((checkSpot === "n" || checkSpot === "N") && isColorOpp(pieceColor, checkSpot)) {
+                knightValid = false;
+            }
+
+            // Check for bishops and queen diagonal
+            for(let j = 0; j < 4; j++) {
+                // Reset starting spot
+                r = Ycoord;
+                c = Xcoord;
+                while(true) {
+                    // On the first for loop, check up and right
+                    if(j === 0) {
+                        r -= 1;
+                        c += 1;
+                    }
+                    // On the second for loop, check down and right
+                    else if(j === 1) {
+                        r += 1;
+                        c += 1;
+                    }
+                    // On the third for loop, check down and left
+                    else if(j === 2) {
+                        c -= 1;
+                        r += 1;
+                    }
+                    // On the fourth for loop, check up and left
+                    else if(j === 3) {
+                        c -= 1;
+                        r -= 1;
+                    }
+
+                    checkSpot = board[c][r];
+
+                    // If spot is open
+                    if(checkSpot === 1) {
+                        continue;
+                    }
+                    // If spot is an opposite color bishop or queen
+                    else if((checkSpot === "b" || checkSpot === "B" || checkSpot === "q" || checkSpot === "Q")
+                        && isColorOpp(pieceColor,checkSpot)) {
+                        diagonalValid = false;
+                        break;
+                    }
+                    // If spot has a piece that is not a bishop or queen
+                    else if(!isColorOpp(pieceColor,checkSpot) || isColorOpp(pieceColor,checkSpot)) {
+                        break;
+                    }
+                    // If spot is now out of play area
+                    else if(checkSpot === 0) {
+                        break;
+                    }
                 }
             }
-        }
 
-        if(valid && diagonalValid) {
-            validMoves[k] = [x, y - 1];
+            // Check for rooks and queen
+            for(let j = 0; j < 4; j++) {
+                r = Ycoord;
+                c = Xcoord;
+                while(true) {
+                    // On the first for loop, check up
+                    if(j === 0) {
+                        r -= 1;
+                    }
+                    // On the second for loop, check down
+                    else if(j === 1) {
+                        r += 1;
+                    }
+                    // On the third for loop, check right
+                    else if(j === 2) {
+                        c += 1;
+                    }
+                    // On the fourth for loop, check left
+                    else if(j === 3) {
+                        c -= 1;
+                    }
+                    checkSpot = board[c][r];
+                    // If spot is open
+                    if(checkSpot === 1) {
+                        continue;
+                    }
+                    // If spot is an opposite color bishop or queen
+                    else if((checkSpot === "r" || checkSpot === "R" || checkSpot === "q" || checkSpot === "Q")
+                        && isColorOpp(pieceColor,checkSpot)) {
+                        ninetyValid = false;
+                        break;
+                    }
+                    // If spot has a piece that is not a rook or queen
+                    else if(!isColorOpp(pieceColor,checkSpot) || isColorOpp(pieceColor,checkSpot)) {
+                        break;
+                    }
+                    else if(checkSpot === 0) {
+                        break;
+                    }
+                }
+            }
+
+            if(knightValid && diagonalValid && ninetyValid) {
+                validMoves[k] = [Xcoord, Ycoord];
+                k++;
+            }
         }
     }
 
