@@ -53,6 +53,8 @@
     // game setup
     let dragTarget = null;
     let clickTarget = null;
+    let startPos = [];
+    let validMoves = [];
 
     function addPiece(x, y, pieceType) {
       let piece = PIXI.Sprite.from(pieceType);
@@ -118,7 +120,7 @@
     }
 
     addPiece(0, 0, spritesheet.textures.board_piece);
-    addPiece(2, 2, spritesheet.textures.board_piece);
+    addPiece(0, 2, spritesheet.textures.board_piece);
     addPiece(4, 4, spritesheet.textures.board_piece);
     addPiece(8, 4, spritesheet.textures.board_piece);
     addPiece(10, 4, spritesheet.textures.board_piece);
@@ -141,11 +143,17 @@
     let highlightContainer = new PIXI.Container;
     app.stage.addChild(highlightContainer);
 
+
+    function clearHightlights() {
+      if (highlightContainer.parent !== null) {
+        highlightContainer.parent.removeChild(highlightContainer);
+        highlightContainer = new PIXI.Container;
+      }
+    }
     // input functions
     function onClick() {
-      let validMoves = [];
-      highlightContainer.parent.removeChild(highlightContainer);
-      highlightContainer = new PIXI.Container;
+      validMoves = [];
+      clearHightlights();
 
       clickTarget = this;
       let gridAlignedX = Math.floor(clickTarget.x / boardSize);
@@ -157,11 +165,25 @@
 
       validMoves.forEach((validMove) => {
         const rect = new PIXI.Graphics()
-          .rect(validMove[0] * boardSize, validMove[1] * boardSize, boardSize, boardSize)
-          .fill({ color: 0xFFFF00, alpha: 0.5 });
+          .rect(0, 0, boardSize, boardSize)
+          .fill({ color: 0xFFFF00, alpha: 0.5 })
+          .on('pointerdown', onHighlightClick);
+        rect.eventMode = "static";
+        rect.cursor = "pointer";
+        rect.x = validMove[0] * boardSize;
+        rect.y = validMove[1] * boardSize;
         highlightContainer.addChild(rect);
       });
       app.stage.addChild(highlightContainer);
+    }
+
+    function onHighlightClick() {
+      let gridAlignedX = Math.floor(clickTarget.x / boardSize);
+      let gridAlignedY = Math.floor(clickTarget.y / boardSize);
+      board[gridAlignedX][gridAlignedY] = 1;
+      clickTarget.x = this.x;
+      clickTarget.y = this.y;
+      clearHightlights();
     }
 
     function onDragMove(event) {
@@ -172,6 +194,7 @@
 
     function onDragStart() {
       // Store a reference to the data
+      startPos = [this.x, this.y];
       this.alpha = 0.5;
       dragTarget = this;
       app.stage.on('pointermove', onDragMove);
@@ -191,18 +214,29 @@
 
     function onDragEnd() {
       if (dragTarget) {
-
         // snap to grid
         let gridAlignedX = Math.floor(dragTarget.x / boardSize);
-        dragTarget.x = boardSize * gridAlignedX;
         let gridAlignedY = Math.floor(dragTarget.y / boardSize);
-        dragTarget.y = boardSize * gridAlignedY;
 
-
-        // update board state
         if (dragTarget.texture.label !== "board_piece") {
-          board[gridAlignedX][gridAlignedY] = pieceToNotation(dragTarget.texture.label);
+          var hash = {};
+          for (var i = 0; i < validMoves.length; i += 1) {
+            hash[validMoves[i]] = i;
+          }
+          if (hash.hasOwnProperty([gridAlignedX, gridAlignedY])) {
+            dragTarget.x = boardSize * gridAlignedX;
+            dragTarget.y = boardSize * gridAlignedY;
+
+            // update board state
+            board[gridAlignedX][gridAlignedY] = pieceToNotation(dragTarget.texture.label);
+            clearHightlights();
+          } else {
+            dragTarget.x = startPos[0];
+            dragTarget.y = startPos[1];
+          }
         } else {
+          dragTarget.x = boardSize * gridAlignedX;
+          dragTarget.y = boardSize * gridAlignedY;
           board[gridAlignedX][gridAlignedY] = 1;
           board[gridAlignedX + 1][gridAlignedY] = 1;
           board[gridAlignedX][gridAlignedY + 1] = 1;
