@@ -122,10 +122,20 @@
     addPiece(0, 0, spritesheet.textures.board_piece);
     addPiece(0, 2, spritesheet.textures.board_piece);
     addPiece(4, 4, spritesheet.textures.board_piece);
-    addPiece(8, 4, spritesheet.textures.board_piece);
-    addPiece(10, 4, spritesheet.textures.board_piece);
+
     addPiece(2, 4, spritesheet.textures.board_piece);
     addPiece(4, 2, spritesheet.textures.board_piece);
+
+    // Right section
+    addPiece(8, 0, spritesheet.textures.board_piece);
+    addPiece(10, 0, spritesheet.textures.board_piece);
+    addPiece(12, 0, spritesheet.textures.board_piece);
+    addPiece(8, 2, spritesheet.textures.board_piece);
+    addPiece(10, 2, spritesheet.textures.board_piece);
+    addPiece(12, 2, spritesheet.textures.board_piece);
+    addPiece(8, 4, spritesheet.textures.board_piece);
+    addPiece(10, 4, spritesheet.textures.board_piece);
+    addPiece(12, 4, spritesheet.textures.board_piece);
 
     let pawn = addPiece(1, 1, spritesheet.textures.pawn_black);
     let knight = addPiece(0, 1, spritesheet.textures.knight_white);
@@ -133,6 +143,10 @@
     let rook = addPiece(3, 4, spritesheet.textures.rook_black);
     let queen = addPiece(4, 3, spritesheet.textures.queen_white);
     let king = addPiece(3, 5, spritesheet.textures.king_black);
+
+    let knightBlack = addPiece(4, 2, spritesheet.textures.knight_black);
+    let pawnWhite = addPiece(10, 3, spritesheet.textures.pawn_white);
+    let bishopBlack = addPiece(10, 2, spritesheet.textures.bishop_black);
 
 
     app.stage.eventMode = 'static';
