@@ -1,0 +1,3 @@
+# Making it so that my setup is compaitable with yall's existing code
+.prettierignore
+node_modules
