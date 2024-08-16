@@ -7,33 +7,67 @@
 
 <body>
   <h1>Hello PixiJS</h1>
+  Game ID: <input id="game-id" value="123"/>
+  <button id="join-game-button">Join Game</button>
+  <button id="create-game-button">Create Game</button>
+  <div>
+    Current Turn: <div id="current-turn-text"><div/>
+  </div>
   <script type="module">
     import { atlasData } from './spritesheet.js';
     import { getValidMoves } from './pieceMove.js';
 
+    const gameIdInput = document.getElementById("game-id");
+    const joinGameButton = document.getElementById("join-game-button")
+    const createGameButton = document.getElementById("create-game-button")
+
     // board size in px
     const boardSize = 128;
+    const GAME_ID = gameIdInput.value;
+    const BLACK_PLAYER = "black";
+    const WHITE_PLAYER = "white";
 
-    let board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    ];
+    let gamestate;
+    let player;
 
-    board = board[0].map((_, colIndex) => board.map(row => row[colIndex]));
+    joinGameButton.onclick = joinGame;
+    createGameButton.onclick = createGame;
+
+    async function createGame(event) {
+      gameIdInput.style.visibility='hidden';
+      joinGameButton.style.visibility='hidden';
+      createGameButton.style.visibility='hidden';
+      await fetch(`http://localhost:3000/api/create/${GAME_ID}`, { method: "POST" })
+      .then(resp => resp.json())
+      .then(newGameState => {
+        console.log("Created newGameState", newGameState);
+        gamestate = newGameState
+        // Whoever creates the game is white
+        player = WHITE_PLAYER;
+        setBoard();
+      })
+      .catch(
+        (error) => console.error("Error creating game", error)
+      );
+    }
+
+    async function joinGame(event) {
+      gameIdInput.style.visibility='hidden';
+      joinGameButton.style.visibility='hidden';
+      createGameButton.style.visibility='hidden';
+      await fetch(`http://localhost:3000/api/join/${GAME_ID}`, { method: "POST" })
+      .then(resp => resp.json())
+      .then(newGameState => {
+        console.log("Joined newGameState", newGameState);
+        gamestate = newGameState
+        // Whoever joins the game is black
+        player = BLACK_PLAYER;
+        setBoard();
+      })
+      .catch(
+        (error) => console.error("Error joining game", error)
+      );
+    }
 
     // create app
     const app = new PIXI.Application();
@@ -67,15 +101,6 @@
       piece.on('pointerdown', onDragStart, piece);
       piece.on('pointerdown', onClick);
       //piece.on('pointerleave', offClick)
-
-      if (pieceType === spritesheet.textures.board_piece) {
-        board[x][y] = 1;
-        board[x + 1][y] = 1;
-        board[x][y + 1] = 1;
-        board[x + 1][y + 1] = 1;
-      } else {
-        board[x][y] = pieceToNotation(pieceType);
-      }
 
       app.stage.addChild(piece);
     }
@@ -119,35 +144,73 @@
       }
     }
 
-    addPiece(0, 0, spritesheet.textures.board_piece);
-    addPiece(0, 2, spritesheet.textures.board_piece);
-    addPiece(4, 4, spritesheet.textures.board_piece);
+    function notationToPiece(piece) {
+      if (piece === "p") {
+        return spritesheet.textures.pawn_black;
+      }
+      if (piece === "n") {
+        return spritesheet.textures.knight_black;
+      }
+      if (piece === "b") {
+        return spritesheet.textures.bishop_black;
+      }
+      if (piece === "r") {
+        return spritesheet.textures.rook_black;
+      }
+      if (piece === "q") {
+        return spritesheet.textures.queen_black;
+      }
+      if (piece === "k") {
+        return spritesheet.textures.king_black;
+      }
+      if (piece === "P") {
+        return spritesheet.textures.pawn_white;
+      }
+      if (piece === "N") {
+        return spritesheet.textures.knight_white;
+      }
+      if (piece === "B") {
+        return spritesheet.textures.bishop_white;
+      }
+      if (piece === "R") {
+        return spritesheet.textures.rook_white;
+      }
+      if (piece === "Q") {
+        return spritesheet.textures.queen_white;
+      }
+      if (piece === "K") {
+        return spritesheet.textures.king_white;
+      }
+    }
 
-    addPiece(2, 4, spritesheet.textures.board_piece);
-    addPiece(4, 2, spritesheet.textures.board_piece);
+    function setBoard(){
+      // Set board pieces before game pieces so that pieces show on top of board pieces
+      let board = gamestate.board;
+      for(var y = 0; y < board.length; y++) {
+        for(var x = 0; x < board[y].length; x++) {
+          if(board[x][y] === 1){
+              addPiece(x, y, spritesheet.textures.board_piece)
+            }
+        }
+      }
 
-    // Right section
-    addPiece(8, 0, spritesheet.textures.board_piece);
-    addPiece(10, 0, spritesheet.textures.board_piece);
-    addPiece(12, 0, spritesheet.textures.board_piece);
-    addPiece(8, 2, spritesheet.textures.board_piece);
-    addPiece(10, 2, spritesheet.textures.board_piece);
-    addPiece(12, 2, spritesheet.textures.board_piece);
-    addPiece(8, 4, spritesheet.textures.board_piece);
-    addPiece(10, 4, spritesheet.textures.board_piece);
-    addPiece(12, 4, spritesheet.textures.board_piece);
+      for(var y = 0; y < board.length; y++) {
+          for(var x = 0; x < board[y].length; x++) {
+            if(board[x][y] !== 0 && board[x][y] !== 1) {
+              addPiece(x, y, notationToPiece(board[x][y]))
+            }
+          }
+      }
+      updateCurrentTurn();
+    }
 
-    let pawn = addPiece(1, 1, spritesheet.textures.pawn_black);
-    let knight = addPiece(0, 1, spritesheet.textures.knight_white);
-    let bishop = addPiece(2, 3, spritesheet.textures.bishop_white);
-    let rook = addPiece(3, 4, spritesheet.textures.rook_black);
-    let queen = addPiece(4, 3, spritesheet.textures.queen_white);
-    let king = addPiece(3, 5, spritesheet.textures.king_black);
-
-    let knightBlack = addPiece(4, 2, spritesheet.textures.knight_black);
-    let pawnWhite = addPiece(10, 3, spritesheet.textures.pawn_white);
-    let bishopBlack = addPiece(10, 2, spritesheet.textures.bishop_black);
-
+    /**
+     * Updates the current turn text to reflect the current gamestate.
+     */
+    function updateCurrentTurn() {
+      console.log(document.getElementById("current-turn-text").innerText);
+      document.getElementById("current-turn-text").innerText = gamestate.currentTurn;
+    }
 
     app.stage.eventMode = 'static';
     app.stage.hitArea = app.screen;
@@ -174,7 +237,7 @@
       let gridAlignedY = Math.floor(clickTarget.y / boardSize);
 
       if (clickTarget.texture.label !== "board_piece") {
-        validMoves = getValidMoves(gridAlignedX, gridAlignedY, board, clickTarget.texture.label);
+        validMoves = getValidMoves(gridAlignedX, gridAlignedY, gamestate.board, clickTarget.texture.label);
       }
 
       validMoves.forEach((validMove) => {
@@ -194,19 +257,26 @@
     function onHighlightClick() {
       let gridAlignedX = Math.floor(clickTarget.x / boardSize);
       let gridAlignedY = Math.floor(clickTarget.y / boardSize);
-      board[gridAlignedX][gridAlignedY] = 1;
-      clickTarget.x = this.x;
-      clickTarget.y = this.y;
+      if(gamestate.currentTurn === player) {
+        gamestate.board[gridAlignedX][gridAlignedY] = 1;
+        clickTarget.x = this.x;
+        clickTarget.y = this.y;
+      }
       clearHightlights();
     }
 
     function onDragMove(event) {
-      if (dragTarget) {
+      if (dragTarget && gamestate.currentTurn === player) {
         dragTarget.parent.toLocal(event.global, null, dragTarget.position);
       }
     }
 
     function onDragStart() {
+
+      if(gamestate.currentTurn !== player) {
+        return;
+      }
+
       // Store a reference to the data
       startPos = [this.x, this.y];
       this.alpha = 0.5;
@@ -217,17 +287,17 @@
       let gridAlignedX = Math.floor(dragTarget.x / boardSize);
       let gridAlignedY = Math.floor(dragTarget.y / boardSize);
       if (dragTarget.texture.label !== "board_piece") {
-        board[gridAlignedX][gridAlignedY] = 1;
+        gamestate.board[gridAlignedX][gridAlignedY] = 1;
       } else {
-        board[gridAlignedX][gridAlignedY] = 0;
-        board[gridAlignedX + 1][gridAlignedY + 1] = 0;
-        board[gridAlignedX][gridAlignedY + 1] = 0;
-        board[gridAlignedX + 1][gridAlignedY] = 0;
+        gamestate.board[gridAlignedX][gridAlignedY] = 0;
+        gamestate.board[gridAlignedX + 1][gridAlignedY + 1] = 0;
+        gamestate.board[gridAlignedX][gridAlignedY + 1] = 0;
+        gamestate.board[gridAlignedX + 1][gridAlignedY] = 0;
       }
     }
 
-    function onDragEnd() {
-      if (dragTarget) {
+    async function onDragEnd() {
+      if (dragTarget && gamestate.currentTurn === player) {
         // snap to grid
         let gridAlignedX = Math.floor(dragTarget.x / boardSize);
         let gridAlignedY = Math.floor(dragTarget.y / boardSize);
@@ -242,7 +312,7 @@
             dragTarget.y = boardSize * gridAlignedY;
 
             // update board state
-            board[gridAlignedX][gridAlignedY] = pieceToNotation(dragTarget.texture.label);
+            gamestate.board[gridAlignedX][gridAlignedY] = pieceToNotation(dragTarget.texture.label);
             clearHightlights();
           } else {
             dragTarget.x = startPos[0];
@@ -251,12 +321,43 @@
         } else {
           dragTarget.x = boardSize * gridAlignedX;
           dragTarget.y = boardSize * gridAlignedY;
-          board[gridAlignedX][gridAlignedY] = 1;
-          board[gridAlignedX + 1][gridAlignedY] = 1;
-          board[gridAlignedX][gridAlignedY + 1] = 1;
-          board[gridAlignedX + 1][gridAlignedY + 1] = 1;
+          gamestate.board[gridAlignedX][gridAlignedY] = 1;
+          gamestate.board[gridAlignedX + 1][gridAlignedY] = 1;
+          gamestate.board[gridAlignedX][gridAlignedY + 1] = 1;
+          gamestate.board[gridAlignedX + 1][gridAlignedY + 1] = 1;
         }
-        console.log(board);
+
+        if(dragTarget.x !== startPos[0] || dragTarget.y !== startPos[1]) {
+          fetch(`http://localhost:3000/api/move/${GAME_ID}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(gamestate.board)
+          })
+          .then(response => response.json())
+          .then(newGameState =>{
+            gamestate = newGameState;
+            updateCurrentTurn();
+            setInterval(() => {
+              fetch(`http://localhost:3000/api/game/${GAME_ID}`, {
+                headers: {
+                  "Content-Type": "application/json",
+                }
+              })
+              .then(response => response.json())
+              .then(newGameState =>{
+                gamestate = newGameState;
+                updateCurrentTurn();
+              });
+            }, 10000);
+          })
+          .catch(err=>{
+            console.log("Error sending piece move:", err)
+          });
+        }
+
+        console.log(gamestate);
 
         // finish drag
         app.stage.off('pointermove', onDragMove);
